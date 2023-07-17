@@ -64,6 +64,20 @@ create table user_role
     foreign key (role_id) references role (role_id)
 );
 
+
+# 게시판 테이블 만들기
+create table board
+(
+    board_id int primary key auto_increment,
+    title varchar(100) not null,
+    content text not null,
+    user_id int not null,
+    regdate timestamp not null default now(),
+    view_cnt int default 0,
+    foreign key (user_id) references user (user_id)
+);
+
+
 ```
 
 
