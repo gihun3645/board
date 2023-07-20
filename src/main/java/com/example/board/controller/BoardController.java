@@ -1,10 +1,14 @@
 package com.example.board.controller;
 
+import com.example.board.dto.LoginInfo;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpSession;
 
 // HTTP 요청을 받아서 응답을 하는 컴포넌트, 스프링 부트가 자동으로 Bean을 생성한다.
 @Controller
@@ -15,7 +19,9 @@ public class BoardController {
     // list 를 리턴한다는 것은
     // classpath:template/list
     @GetMapping("/")
-    public String list() {
+    public String list(HttpSession session, Model model) {
+        LoginInfo loginInfo = (LoginInfo) session.getAttribute("loginInfo");
+        model.addAttribute("loginInfo", loginInfo);
         // 게시물 목록을 불러온다
         // 페이징 처리한다
         return "list";

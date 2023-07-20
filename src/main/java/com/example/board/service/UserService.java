@@ -13,23 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     // UserDao를 인젝션 받아야함
     private final UserDao userDao;
-//    // final 키워드를 사용하면 생성자 주입을 해야함
-//    // spring 이 UserService를 Bean으로 생성할 때 생성자를 이용해 생성을 하는데, 이때 UserDao Bean이 있는지 보고
-//    // 그 빈을 주입한다. 생성자 주입.
-//    public UserService(UserDao userDao) {
-//        this.userDao = userDao;
-//    }
 
-
-    // 보통 서비스에서는 @Transactional 을 붙여서 하나의 트렌젝션으로 처리하게 된다.
-    // Spring Boot는 트렌잭션을 처리해주는 트랜젝션 관리자를 가지고 있다.
     @Transactional
     public User addUser(String name, String email, String password) {
-        // 트랜젝션이 시작된다.
-        // User 선언
-        User user = userDao.addUser(email, name, password);
-        userDao.mappingUserRole(user.getUserId()); // 권한을 부여한다.
+        User user = userDao.addUser(name, email, password);
+        System.out.println(user);
+        userDao.mappingUserRole(user.getUserId());
         return user;
-        // 트랜젝션이 끝난다.
     }
+
+    @Transactional
+    public User getUser(String email) {
+        return userDao.getUser(email);
+    }
+
 }
