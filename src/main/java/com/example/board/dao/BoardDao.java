@@ -43,7 +43,7 @@ public class BoardDao {
     @Transactional(readOnly = true)
     public int getTotalCount() {
         String sql = "SELECT COUNT(*) as total_count FROM board"; // 무조건 1건의 데이터
-        Integer totalCount =  jdbcTemplate.queryForObject(sql, Map.of(), Integer.class);
+        Integer totalCount = jdbcTemplate.queryForObject(sql, Map.of(), Integer.class);
         return totalCount.intValue();
     }
 
@@ -66,7 +66,7 @@ public class BoardDao {
         // 0건 또는 1건
         String sql = "select b.user_id, b.board_id, b.title,b.content, b.regdate, b.view_cnt, u.name from board b, user u where b.user_id = u.user_id and board_id= :boardId";
 
-        Board board = jdbcTemplate.queryForObject(sql,Map.of("boardId", boardId), BeanPropertyRowMapper.newInstance(Board.class));
+        Board board = jdbcTemplate.queryForObject(sql, Map.of("boardId", boardId), BeanPropertyRowMapper.newInstance(Board.class));
         return board;
     }
 
@@ -82,5 +82,19 @@ public class BoardDao {
     public void deleteBoard(int boardId) {
         String sql = "delete from board where board_id = :boardId";
         jdbcTemplate.update(sql, Map.of("boardId", boardId));
+    }
+
+
+    @Transactional
+    public void updateBoard(int boardId, String title, String content) {
+        String sql = "update board set title = :title, content = :content where board_id = :boardId";
+//        jdbcTemplate.update(sql, Map.of("title", title, "content", content, "boardId", boardId));
+        // 이렇게도 가능 (오타가 날 가능성이 적다)
+        Board board = new Board();
+        board.setBoardId(boardId);
+        board.setTitle(title);
+        board.setContent(content);
+        SqlParameterSource params = new BeanPropertySqlParameterSource(board);
+        jdbcTemplate.update(sql, params);
     }
 }

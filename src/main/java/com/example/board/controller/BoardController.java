@@ -35,9 +35,6 @@ public class BoardController {
         List<Board> list = boardService.getBoards(page); // page가 1,2,3,4
         System.out.println("totalCount : " + totalCount);
 
-        for (Board board : list) {
-            System.out.println(board);
-        }
 
         // 총 페이지 수 구하기
         int pageCount = totalCount / 10;
@@ -117,7 +114,46 @@ public class BoardController {
         }
 
         // loginInfo.getUserId() 사용자가 쓴 글일 경우에만 삭제한다.
-        boardService.deleteBoard(loginInfo.getUserId(), boardId);
+        List<String> roles = loginInfo.getRoles();
+        if (roles.contains("ROLE_ADMIN")) { // 관리자는 모든 글을 삭제할 수 있다.
+            boardService.deleteBoard(boardId);
+        } else {
+            boardService.deleteBoard(loginInfo.getUserId(), boardId);
+        }
         return "redirect:/";
+    }
+
+    @GetMapping("/updateForm")
+    public String updateform(@RequestParam("boardId") int boardId,
+                             Model model, HttpSession session) {
+        LoginInfo loginInfo = (LoginInfo) session.getAttribute("loginInfo");
+        if (loginInfo == null) { // 세션에 로그인 정보가 없다면 로그인 창으로 리다이렉트
+            return "redirect:/loginform";
+        }
+        // boardId에 해당하는 정보를 읽어와서 updateForm.html에 전달한다.
+        Board board = boardService.getBoard(boardId, false);
+        model.addAttribute("board", board);
+        model.addAttribute("loginInfo", loginInfo);
+        return "updateForm";
+    }
+
+    @PostMapping("/update")
+    public String update(@RequestParam("boardId") int boardId,
+                         @RequestParam("title") String title,
+                         @RequestParam("content") String content,
+                         HttpSession session) {
+        LoginInfo loginInfo = (LoginInfo) session.getAttribute("loginInfo");
+        if (loginInfo == null) { // 세션에 로그인 정보가 없다면 로그인 창으로 리다이렉트
+            return "redirect:/loginform";
+        }
+
+        Board board = boardService.getBoard(boardId, false);
+        if (board.getUserId() != loginInfo.getUserId()) {
+            System.out.println("수정 권한이 없습니다.");
+            return "redirect:/board?boardId=" + boardId + "&updatefail=true";
+        }
+        // boardId에 해당하는 글의 제목과 내용을 수정한다.
+        boardService.updateBoard(boardId, title, content);
+        return "redirect:/board?boardId=" + boardId;
     }
 }

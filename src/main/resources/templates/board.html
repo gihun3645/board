@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>게시물 상세보기</title>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>게시물 상세보기</title>
 </head>
 <body>
 <H1 th:text="${board.title}"></H1>
 <div>
-  글쓴이 : <span th:text="${board.name}"></span>
+    글쓴이 : <span th:text="${board.name}"></span>
 </div>
 <div>
-  조회수 : <span th:text="${board.viewCnt}"></span>
+    조회수 : <span th:text="${board.viewCnt}"></span>
 </div>
 <div>
-  등록일 : <span th:text="${board.regDate}"></span>
+    등록일 : <span th:text="${board.regDate}"></span>
 </div>
 <div>
-  내용 : <span th:text="${board.content}"></span>
+    내용 : <span th:text="${board.content}"></span>
 </div>
 
 <div><a href="/">목록보기</a></div>
 <!--내가 로그인 한 경우에만 수정, 삭제 버튼이 보이도록 하기-->
-<div><a href="/">수정하기</a></div>
+<div><a th:href="@{/updateForm(boardId=${board.boardId})}">수정하기</a></div>
 <div><a th:href="@{/delete(boardId=${board.boardId})}">삭제하기</a></div>
 </body>
 </html>
