@@ -16,6 +16,13 @@ public class UserService {
 
     @Transactional
     public User addUser(String name, String email, String password) {
+        // 이메일 중복 검사
+
+        User user1 = userDao.getUser(email);
+        if (user1 != null) {
+            throw new RuntimeException("이미 가입된 이메일입니다.");
+        }
+
         User user = userDao.addUser(name, email, password);
         System.out.println(user);
         userDao.mappingUserRole(user.getUserId());

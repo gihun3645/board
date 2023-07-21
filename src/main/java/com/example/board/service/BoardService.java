@@ -28,4 +28,23 @@ public class BoardService {
     public List<Board> getBoards(int page) {
         return boardDao.getBoards(page);
     }
+
+
+    @Transactional
+    public Board getBoard(int boardId) {
+        // id에 해당하는 게시물을 읽어온다
+        // id를 못받아왔을 경우의 예외처리도 추가
+        Board board = boardDao.getBoard(boardId);
+        // id에 해당하는 게시물을 조회수도 1증가한다
+        boardDao.updateViewCnt(boardId);
+        return board;
+    }
+
+    @Transactional
+    public void deleteBoard(int userId, int boardId) {
+        Board board = boardDao.getBoard(boardId);
+        if (board.getUserId() == userId) {
+            boardDao.deleteBoard(boardId);
+        }
+    }
 }

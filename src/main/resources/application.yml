@@ -1,5 +1,7 @@
 # database ??
 spring:
+  thymeleaf:
+    cache: false
   datasource:
     url: jdbc:mysql://localhost:3306/exampledb?serverTimezone=Asia/Seoul
     username: root

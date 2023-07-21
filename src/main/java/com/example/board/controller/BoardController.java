@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
@@ -26,19 +25,19 @@ public class BoardController {
     // list 를 리턴한다는 것은
     // classpath:template/list
     @GetMapping("/")
-    public String list(HttpSession session, Model model) {
+    public String list(@RequestParam(name = "page", defaultValue = "1") int page,
+                       HttpSession session, Model model) {
         LoginInfo loginInfo = (LoginInfo) session.getAttribute("loginInfo");
         model.addAttribute("loginInfo", loginInfo);
         // 게시물 목록을 불러온다
         // 페이징 처리한다
-        int page = 1;
         int totalCount = boardService.getTotalCount();
         List<Board> list = boardService.getBoards(page); // page가 1,2,3,4
         System.out.println("totalCount : " + totalCount);
 
-//        for (Board board : list) {
-//            System.out.println(board);
-//        }
+        for (Board board : list) {
+            System.out.println(board);
+        }
 
         // 총 페이지 수 구하기
         int pageCount = totalCount / 10;
@@ -59,13 +58,14 @@ public class BoardController {
     // /board?id=2
     // /board?id=1
     @GetMapping("/board")
-    public String board(@RequestParam("id") int id) {
-        System.out.println("id : " + id);
+    public String board(@RequestParam("boardId") int boardId, Model model) {
+        System.out.println("boardId : " + boardId);
 
         // id에 해당하는 게시물을 읽어온다
         // id에 해당하는 게시물을 조회수도 1증가한다
 
-
+        Board board = boardService.getBoard(boardId);
+        model.addAttribute("board", board);
         return "board";
     }
 
@@ -105,5 +105,19 @@ public class BoardController {
         // 로그인한 회원 정보 + 제목, 내용을 저장한다.
 
         return "redirect:/"; // 리스트 보기로 리다이렉트한다.
+    }
+
+    @GetMapping("/delete")
+    public String delete(@RequestParam("boardId") int boardId,
+                         HttpSession session
+    ) {
+        LoginInfo loginInfo = (LoginInfo) session.getAttribute("loginInfo");
+        if (loginInfo == null) { // 세션에 로그인 정보가 없다면 로그인 창으로 리다이렉트
+            return "redirect:/loginform";
+        }
+
+        // loginInfo.getUserId() 사용자가 쓴 글일 경우에만 삭제한다.
+        boardService.deleteBoard(loginInfo.getUserId(), boardId);
+        return "redirect:/";
     }
 }
